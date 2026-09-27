@@ -1,0 +1,47 @@
+# Continuous Integration: runs automatically on every push and pull request.
+# Open the Actions tab on GitHub to watch each job.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Run tests
+        run: npm test
+
+  # A stand-in for "deploy". It only runs after tests pass on main.
+  # Replace this job later with a real host (GitHub Pages, Fly.io, etc.).
+  package:
+    name: Package (demo CD)
+    needs: test
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Bundle the app as an artifact
+        run: tar -czf cicd-lab.tar.gz src package.json README.md
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: cicd-lab
+          path: cicd-lab.tar.gz

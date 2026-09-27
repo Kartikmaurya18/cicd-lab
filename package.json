@@ -1,0 +1,12 @@
+{
+  "name": "cicd-lab",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Tiny app for learning CI/CD with GitHub Actions",
+  "scripts": {
+    "start": "node src/index.js",
+    "test": "node --test",
+    "ci": "npm test"
+  }
+}
